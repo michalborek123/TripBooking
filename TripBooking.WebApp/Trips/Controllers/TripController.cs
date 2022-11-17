@@ -20,9 +20,11 @@ namespace TripBooking.WebApp.Trips.Controllers
         private readonly ITripRepository _tripRepository;
 
         [HttpPost(Name = "CreateTrip")]
-        public Task CreateTrip(CreateTripRequest request)
+        public async Task<Trip> CreateTrip(CreateTripRequest request)
         {
-            return Task.CompletedTask;
+            var trip = await _tripRepository.AddTripAsync(request);
+
+            return trip;
         }
 
         [HttpGet(Name = "GetTripByName")]
