@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripBooking.WebApp", "TripB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripBooking.Data", "TripBooking.Data\TripBooking.Data.csproj", "{570CB1D7-4B75-4979-A1EB-75216E7C58D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripBooking.Core", "TripBooking.Core\TripBooking.Core.csproj", "{26703184-4773-4046-B199-50A390352162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{570CB1D7-4B75-4979-A1EB-75216E7C58D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{570CB1D7-4B75-4979-A1EB-75216E7C58D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{570CB1D7-4B75-4979-A1EB-75216E7C58D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26703184-4773-4046-B199-50A390352162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26703184-4773-4046-B199-50A390352162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26703184-4773-4046-B199-50A390352162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26703184-4773-4046-B199-50A390352162}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

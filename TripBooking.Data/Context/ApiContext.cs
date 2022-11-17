@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TripBooking.Data.Trips.Model;
 
 namespace TripBooking.Data.Context
 {
@@ -7,5 +8,7 @@ namespace TripBooking.Data.Context
         public ApiContext(DbContextOptions options) : base(options)
         {
         }
+
+        public DbSet<Trip> Trips { get; set; }
     }
 }
