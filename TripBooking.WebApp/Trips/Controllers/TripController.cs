@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Core.Trips.Responses;
@@ -18,11 +19,20 @@ namespace TripBooking.WebApp.Trips.Controllers
         private readonly ITripRepository _tripRepository;
 
         [HttpPost(Name = "CreateTrip")]
-        public async Task<ActionResult<TripResponse>> CreateTrip(CreateTripRequest request)
+        public async Task<ActionResult<TripResponse>> CreateTrip(CreateTripRequest request, CancellationToken cancellationToken)
         {
-            var trip = await _tripRepository.AddTripAsync(request);
+            var trip = await _tripRepository.AddTripAsync(request, cancellationToken);
 
-            return trip;
+            return CreatedAtRoute("GetTripByName", new { name = trip.Name }, trip);
+        }
+
+
+        [HttpPut("{name}", Name = "UpdateTrip")]
+        public async Task<ActionResult<TripResponse>> UpdateTrip(string name, UpdateTripRequest request, CancellationToken cancellationToken)
+        {
+            var trip = await _tripRepository.UpdateAsync(name, request, cancellationToken);
+
+            return Ok(trip);
         }
 
         [HttpGet("{name}", Name = "GetTripByName")]
@@ -53,8 +63,5 @@ namespace TripBooking.WebApp.Trips.Controllers
 
             return Ok($"Trip {name} deleted.");
         }
-
-
-
     }
 }

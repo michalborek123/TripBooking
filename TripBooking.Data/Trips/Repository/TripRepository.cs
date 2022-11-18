@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Core.Trips.Exceptions;
 using TripBooking.Core.Trips.Responses;
@@ -13,7 +14,8 @@ namespace TripBooking.Data.Trips.Repository
         Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default);
         Task DeleteAsync(string name, CancellationToken cancellationToken);
         Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken);
-        Task<Trip?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<TripResponse> UpdateAsync(string name, UpdateTripRequest request, CancellationToken cancellationToken);
     }
 
     internal class TripRepository : ITripRepository
@@ -29,7 +31,7 @@ namespace TripBooking.Data.Trips.Repository
 
         public async Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default)
         {
-            var trip = await GetByNameAsync(request.Name, cancellationToken);
+            var trip = await GetTripByNameAsync(request.Name, cancellationToken);
 
             if (trip is not null)
             {
@@ -48,7 +50,7 @@ namespace TripBooking.Data.Trips.Repository
 
         public async Task DeleteAsync(string name, CancellationToken cancellationToken)
         {
-            var trip = await GetByNameAsync(name, cancellationToken);
+            var trip = await GetTripByNameAsync(name, cancellationToken);
 
             if (trip is null)
             {
@@ -66,11 +68,42 @@ namespace TripBooking.Data.Trips.Repository
             return Task.FromResult(trips);
         }
 
-        public async Task<Trip?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
-            var result = await apiContext.Trips.FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
+            var trip = await GetTripByNameAsync(name, cancellationToken);
 
-            return result;
+            var response = mapper.Map<TripResponse>(trip);
+
+            return response;
+        }
+
+        public async Task<TripResponse> UpdateAsync(string name, UpdateTripRequest request, CancellationToken cancellationToken)
+        {
+            var trip = await GetTripByNameAsync(name, cancellationToken);
+
+            if (trip is null)
+            {
+                throw new TripDoesNotExistsException(name);
+            }
+
+            trip.Description = request.Description;
+            trip.Start= request.Start;
+            trip.Seats = request.Seats;
+            trip.Country = request.Country;
+            trip.Start = request.Start;
+
+            apiContext.SaveChanges();
+
+            var respone = mapper.Map<TripResponse>(trip);
+
+            return respone;
+        }
+
+        private async Task<Trip?> GetTripByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            var trip = await apiContext.Trips.FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
+
+            return trip;
         }
     }
 }

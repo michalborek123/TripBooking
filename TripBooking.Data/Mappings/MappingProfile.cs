@@ -10,6 +10,7 @@ namespace TripBooking.Data.Mappings
         public MappingProfile()
         {
             CreateMap<CreateTripRequest, Trip>();
+            CreateMap<UpdateTripRequest, Trip>().ForMember(x => x.Id, opt => opt.Ignore());
             CreateMap<Trip, TripResponse>();
         }
     }
