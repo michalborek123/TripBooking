@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading;
+﻿using Microsoft.AspNetCore.Mvc;
 using TripBooking.Core.Enums;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Core.Trips.Responses;
@@ -8,17 +6,28 @@ using TripBooking.Data.Trips.Repository;
 
 namespace TripBooking.WebApp.Trips.Controllers
 {
+    /// <summary>
+    /// Trips booking controller
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class TripController : ControllerBase
+    public class TripsController : ControllerBase
     {
-        public TripController(ITripRepository tripRepository)
+        public TripsController(ITripRepository tripRepository)
         {
             _tripRepository = tripRepository;
         }
 
         private readonly ITripRepository _tripRepository;
 
+        /// <summary>
+        /// Create new trip with all details
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(TripResponse), 201)]
+        [ProducesResponseType(400)]
         [HttpPost(Name = "CreateTrip")]
         public async Task<ActionResult<TripResponse>> CreateTrip(CreateTripRequest request, CancellationToken cancellationToken)
         {
