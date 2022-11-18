@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Core.Trips.Responses;
-using TripBooking.Data.Trips.Model;
 using TripBooking.Data.Trips.Repository;
 
 namespace TripBooking.WebApp.Trips.Controllers
@@ -25,18 +25,36 @@ namespace TripBooking.WebApp.Trips.Controllers
             return trip;
         }
 
-        [HttpGet(Name = "GetTripByName")]
-        public async Task<ActionResult<TripResponse>> GetTripByName(string name, CancellationToken cancellationToken)
+        [HttpGet("{name}", Name = "GetTripByName")]
+        public async Task<ActionResult<TripResponse>> GetTripByName([FromRoute] string name, CancellationToken cancellationToken)
         {
             var result = await _tripRepository.GetByNameAsync(name, cancellationToken);
 
             return Ok(result);
         }
 
-        [HttpDelete(Name = "DeleteTrip")]
-        public IActionResult DeleteTrip(string name)
+        [HttpGet(Name = "GetAllTrips")]
+        public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetAllTrips(CancellationToken cancellationToken)
         {
-            return Ok();
+            var result = await _tripRepository.GetAllAsync(cancellationToken);
+
+            if (result is null || !result.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(result);
         }
+
+        [HttpDelete("{name}", Name = "DeleteTrip")]
+        public async Task<IActionResult> DeleteTrip(string name, CancellationToken cancellationToken)
+        {
+            await _tripRepository.DeleteAsync(name, cancellationToken);
+
+            return Ok($"Trip {name} deleted.");
+        }
+
+
+
     }
 }

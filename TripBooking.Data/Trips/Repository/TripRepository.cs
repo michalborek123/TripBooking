@@ -11,6 +11,8 @@ namespace TripBooking.Data.Trips.Repository
     public interface ITripRepository
     {
         Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default);
+        Task DeleteAsync(string name, CancellationToken cancellationToken);
+        Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken);
         Task<Trip?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     }
 
@@ -31,7 +33,7 @@ namespace TripBooking.Data.Trips.Repository
 
             if (trip is not null)
             {
-                throw new TripExisistsException($"Trip {request.Name} already exists.");
+                throw new TripExisistsException(request.Name);
             }
 
             var newTrip = mapper.Map<Trip>(request);
@@ -42,6 +44,26 @@ namespace TripBooking.Data.Trips.Repository
             var respone = mapper.Map<TripResponse>(newTrip);
 
             return respone;
+        }
+
+        public async Task DeleteAsync(string name, CancellationToken cancellationToken)
+        {
+            var trip = await GetByNameAsync(name, cancellationToken);
+
+            if (trip is null)
+            {
+                throw new TripDoesNotExistsException(name);
+            }
+
+            apiContext.Trips.Remove(trip);
+            apiContext.SaveChanges();
+        }
+
+        public Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            var trips = apiContext.Trips.Select(x => new TripNameResponse(x.Name)).AsEnumerable();
+
+            return Task.FromResult(trips);
         }
 
         public async Task<Trip?> GetByNameAsync(string name, CancellationToken cancellationToken = default)

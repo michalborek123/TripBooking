@@ -4,7 +4,8 @@ namespace TripBooking.Core.Trips.Exceptions
 {
     public class TripExisistsException : CustomException
     {
-        public TripExisistsException(string? message) : base(message)
+        public TripExisistsException(string? name) 
+            : base($"Trip {name} already exists.")
         {
         }
     }
