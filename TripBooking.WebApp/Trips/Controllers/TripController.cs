@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Data.Trips.Model;
 using TripBooking.Data.Trips.Repository;
@@ -8,13 +7,11 @@ namespace TripBooking.WebApp.Trips.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TripController :ControllerBase
+    public class TripController : ControllerBase
     {
         public TripController(ITripRepository tripRepository)
         {
             _tripRepository = tripRepository;
-
-
         }
 
         private readonly ITripRepository _tripRepository;

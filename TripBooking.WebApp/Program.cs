@@ -1,4 +1,5 @@
 using TripBooking.Data.Context;
+using TripBooking.Data.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRepositories();
 builder.Services.AddDataBase();
+builder.Services.AddMappings();
 
 var app = builder.Build();
 

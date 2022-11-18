@@ -1,10 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Data.Context;
 using TripBooking.Data.Trips.Model;
@@ -20,10 +15,12 @@ namespace TripBooking.Data.Trips.Repository
     internal class TripRepository : ITripRepository
     {
         private readonly ApiContext apiContext;
+        private readonly IMapper mapper;
 
-        public TripRepository(ApiContext apiContext)
+        public TripRepository(ApiContext apiContext, IMapper mapper)
         {
             this.apiContext = apiContext;
+            this.mapper = mapper;
         }
 
         public async Task<Trip> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default)
@@ -35,15 +32,7 @@ namespace TripBooking.Data.Trips.Repository
                 throw new Exception($"Trip {request.Name} already exists.");
             }
 
-            var newTrip = new Trip()
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Country = request.Country,
-                Start = request.Start,
-                Seats = request.Seats
-            };
-
+            var newTrip = mapper.Map<Trip>(request);
 
             await apiContext.Trips.AddAsync(newTrip, cancellationToken);
             apiContext.SaveChanges();
