@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TripBooking.Core.Trips.Commands;
+using TripBooking.Core.Trips.Exceptions;
+using TripBooking.Core.Trips.Responses;
 using TripBooking.Data.Context;
 using TripBooking.Data.Trips.Model;
 
@@ -8,7 +10,7 @@ namespace TripBooking.Data.Trips.Repository
 {
     public interface ITripRepository
     {
-        Task<Trip> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default);
+        Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default);
         Task<Trip?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     }
 
@@ -23,13 +25,13 @@ namespace TripBooking.Data.Trips.Repository
             this.mapper = mapper;
         }
 
-        public async Task<Trip> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default)
+        public async Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default)
         {
             var trip = await GetByNameAsync(request.Name, cancellationToken);
 
             if (trip is not null)
             {
-                throw new Exception($"Trip {request.Name} already exists.");
+                throw new TripExisistsException($"Trip {request.Name} already exists.");
             }
 
             var newTrip = mapper.Map<Trip>(request);
@@ -37,7 +39,9 @@ namespace TripBooking.Data.Trips.Repository
             await apiContext.Trips.AddAsync(newTrip, cancellationToken);
             apiContext.SaveChanges();
 
-            return newTrip;
+            var respone = mapper.Map<TripResponse>(newTrip);
+
+            return respone;
         }
 
         public async Task<Trip?> GetByNameAsync(string name, CancellationToken cancellationToken = default)

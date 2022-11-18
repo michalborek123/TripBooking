@@ -1,5 +1,6 @@
 using TripBooking.Data.Context;
 using TripBooking.Data.Mappings;
+using TripBooking.WebApp.Midlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddRepositories();
 builder.Services.AddDataBase();
 builder.Services.AddMappings();
 
+builder.Services.AddSingleton<ExceptionMiddlware>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,7 +27,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseMiddleware<ExceptionMiddlware>();
 
 app.MapControllers();
 
