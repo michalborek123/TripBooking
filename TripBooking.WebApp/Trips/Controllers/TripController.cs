@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
+using TripBooking.Core.Enums;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Core.Trips.Responses;
 using TripBooking.Data.Trips.Repository;
@@ -47,6 +48,20 @@ namespace TripBooking.WebApp.Trips.Controllers
         public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetAllTrips(CancellationToken cancellationToken)
         {
             var result = await _tripRepository.GetAllAsync(cancellationToken);
+
+            if (result is null || !result.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(result);
+        }
+
+
+        [HttpGet("country/{country}", Name = "GetTripsByCountry")]
+        public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetTripsByCountry([FromRoute] State country, CancellationToken cancellationToken)
+        {
+            var result = await _tripRepository.GetByCountryAsync(country, cancellationToken);
 
             if (result is null || !result.Any())
             {

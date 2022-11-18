@@ -1,5 +1,8 @@
-﻿namespace TripBooking.Core.Enums
+﻿using System.Text.Json.Serialization;
+
+namespace TripBooking.Core.Enums
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum State
     {
         None,

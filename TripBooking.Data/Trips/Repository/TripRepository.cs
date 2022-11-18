@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
+using TripBooking.Core.Enums;
 using TripBooking.Core.Trips.Commands;
 using TripBooking.Core.Trips.Exceptions;
 using TripBooking.Core.Trips.Responses;
@@ -14,6 +14,7 @@ namespace TripBooking.Data.Trips.Repository
         Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default);
         Task DeleteAsync(string name, CancellationToken cancellationToken);
         Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<TripNameResponse>> GetByCountryAsync(State country, CancellationToken cancellationToken);
         Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
         Task<TripResponse> UpdateAsync(string name, UpdateTripRequest request, CancellationToken cancellationToken);
     }
@@ -68,6 +69,14 @@ namespace TripBooking.Data.Trips.Repository
             return Task.FromResult(trips);
         }
 
+        public async Task<IEnumerable<TripNameResponse>> GetByCountryAsync(State country, CancellationToken cancellationToken)
+        {
+            var tripsByCountry = await apiContext.Trips.Where(x => x.Country == country)
+                .Select(x => new TripNameResponse(x.Name)).ToListAsync(cancellationToken);
+
+            return tripsByCountry;
+        }
+
         public async Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             var trip = await GetTripByNameAsync(name, cancellationToken);
@@ -87,7 +96,7 @@ namespace TripBooking.Data.Trips.Repository
             }
 
             trip.Description = request.Description;
-            trip.Start= request.Start;
+            trip.Start = request.Start;
             trip.Seats = request.Seats;
             trip.Country = request.Country;
             trip.Start = request.Start;
