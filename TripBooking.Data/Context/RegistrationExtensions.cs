@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using TripBooking.Data.Reservations;
+using TripBooking.Data.Reservations.Repository;
 using TripBooking.Data.Trips.Repository;
 
 namespace TripBooking.Data.Context
@@ -18,7 +17,7 @@ namespace TripBooking.Data.Context
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<ITripRepository, TripRepository>();
-            services.AddScoped<IReservationRepository, ReservationRepository>();
+            services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 
             return services;
         }

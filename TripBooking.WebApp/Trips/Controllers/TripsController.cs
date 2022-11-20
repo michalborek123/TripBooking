@@ -36,24 +36,48 @@ namespace TripBooking.WebApp.Trips.Controllers
             return CreatedAtRoute("GetTripByName", new { name = trip.Name }, trip);
         }
 
-
-        [HttpPut("{name}", Name = "UpdateTrip")]
-        public async Task<ActionResult<TripResponse>> UpdateTrip(string name, UpdateTripRequest request, CancellationToken cancellationToken)
+        /// <summary>
+        /// Update trip details
+        /// </summary>
+        /// <param name="tripName">Trip name to updade</param>
+        /// <param name="request">Trip data to update</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(TripResponse), 200)]
+        [ProducesResponseType(400)]
+        [HttpPut("{tripName}", Name = "UpdateTrip")]
+        public async Task<ActionResult<TripResponse>> UpdateTrip(string tripName, UpdateTripRequest request, CancellationToken cancellationToken)
         {
-            var trip = await _tripRepository.UpdateAsync(name, request, cancellationToken);
+            var trip = await _tripRepository.UpdateAsync(tripName, request, cancellationToken);
 
             return Ok(trip);
         }
 
-        [HttpGet("{name}", Name = "GetTripByName")]
-        public async Task<ActionResult<TripResponse>> GetTripByName([FromRoute] string name, CancellationToken cancellationToken)
+        /// <summary>
+        /// Get trip data by name
+        /// </summary>
+        /// <param name="tripName">Trip name</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("{tripName}", Name = "GetTripByName")]
+        [ProducesResponseType(typeof(TripResponse), 200)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<TripResponse>> GetTripByName([FromRoute] string tripName, CancellationToken cancellationToken)
         {
-            var result = await _tripRepository.GetByNameAsync(name, cancellationToken);
+            var result = await _tripRepository.GetByNameAsync(tripName, cancellationToken);
 
             return Ok(result);
         }
 
+        /// <summary>
+        /// Get all trips
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List of all trips (names)</returns>
         [HttpGet(Name = "GetAllTrips")]
+        [ProducesResponseType(typeof(IEnumerable<TripNameResponse>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetAllTrips(CancellationToken cancellationToken)
         {
             var result = await _tripRepository.GetAllAsync(cancellationToken);
@@ -66,8 +90,16 @@ namespace TripBooking.WebApp.Trips.Controllers
             return Ok(result);
         }
 
-
+        /// <summary>
+        /// Get all trips by country
+        /// </summary>
+        /// <param name="country">Country name</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List of all trips for country (names)</returns>
         [HttpGet("country/{country}", Name = "GetTripsByCountry")]
+        [ProducesResponseType(typeof(IEnumerable<TripNameResponse>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetTripsByCountry([FromRoute] State country, CancellationToken cancellationToken)
         {
             var result = await _tripRepository.GetByCountryAsync(country, cancellationToken);
@@ -80,7 +112,15 @@ namespace TripBooking.WebApp.Trips.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Remove trip
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpDelete("{name}", Name = "DeleteTrip")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> DeleteTrip(string name, CancellationToken cancellationToken)
         {
             await _tripRepository.DeleteAsync(name, cancellationToken);

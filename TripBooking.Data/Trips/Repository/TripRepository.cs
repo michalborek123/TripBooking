@@ -42,7 +42,7 @@ namespace TripBooking.Data.Trips.Repository
             var newTrip = mapper.Map<Trip>(request);
 
             await apiContext.Trips.AddAsync(newTrip, cancellationToken);
-            apiContext.SaveChanges();
+            await apiContext.SaveChangesAsync(cancellationToken);
 
             var respone = mapper.Map<TripResponse>(newTrip);
 
@@ -59,7 +59,7 @@ namespace TripBooking.Data.Trips.Repository
             }
 
             apiContext.Trips.Remove(trip);
-            apiContext.SaveChanges();
+            await apiContext.SaveChangesAsync(cancellationToken);
         }
 
         public Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken)
@@ -101,7 +101,7 @@ namespace TripBooking.Data.Trips.Repository
             trip.Country = request.Country;
             trip.Start = request.Start;
 
-            apiContext.SaveChanges();
+            await apiContext.SaveChangesAsync(cancellationToken);
 
             var respone = mapper.Map<TripResponse>(trip);
 

@@ -3,14 +3,14 @@ using TripBooking.Core.Enums;
 
 namespace TripBooking.Data.Trips.Model
 {
-    public class Trip
+    internal class Trip
     {
         public Guid Id { get; set; }
         /// <summary>
         /// Name of the trip
         /// </summary>
         [Key]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Country destination
@@ -20,7 +20,7 @@ namespace TripBooking.Data.Trips.Model
         /// <summary>
         /// Trip description
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Trip start time

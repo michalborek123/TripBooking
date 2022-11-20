@@ -1,4 +1,5 @@
 using System.Reflection;
+using TripBooking.Core.Infrastructure;
 using TripBooking.Data.Context;
 using TripBooking.Data.Mappings;
 using TripBooking.WebApp.Midlewares;
@@ -22,14 +23,13 @@ builder.Services.AddMappings();
 
 builder.Services.AddSingleton<ExceptionMiddlware>();
 
+builder.Services.AddValidation();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

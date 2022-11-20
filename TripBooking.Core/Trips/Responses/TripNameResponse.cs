@@ -5,7 +5,7 @@
         /// <summary>
         /// Name of the trip
         /// </summary>
-        public string Name { get;}
+        public string Name { get; }
 
         public TripNameResponse(string name)
         {
