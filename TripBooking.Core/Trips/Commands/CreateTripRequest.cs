@@ -1,9 +1,8 @@
 ﻿using TripBooking.Core.Enums;
-using TripBooking.Core.Interfaces;
 
 namespace TripBooking.Core.Trips.Commands
 {
-    public class CreateTripRequest : ICommand
+    public class CreateTripRequest
     {
         /// <summary>
         /// Unique id of command
