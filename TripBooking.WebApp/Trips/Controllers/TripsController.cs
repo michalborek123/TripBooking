@@ -33,7 +33,7 @@ namespace TripBooking.WebApp.Trips.Controllers
         {
             var trip = await _tripRepository.AddTripAsync(request, cancellationToken);
 
-            return CreatedAtRoute("GetTripByName", new { name = trip.Name }, trip);
+            return CreatedAtRoute("GetTripByName", new { tripName = trip.Name }, trip);
         }
 
         /// <summary>
