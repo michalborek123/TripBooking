@@ -8,7 +8,6 @@ namespace TripBooking.Core.Reservations.Validations
         public TripRegistrationRequestValidator()
         {
             RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress();
-            RuleFor(x => x.TripName).NotNull().NotEmpty();
         }
     }
 }

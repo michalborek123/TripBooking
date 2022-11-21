@@ -2,7 +2,9 @@
 {
     public record TripRegistrationRequest
     {
-        public string TripName { get; init; } = string.Empty;
+        public string TripName { get; private set; } = string.Empty;
         public string Email { get; init; } = string.Empty;
+
+        public void SetTripName(string tripName) => TripName = tripName;
     }
 }
