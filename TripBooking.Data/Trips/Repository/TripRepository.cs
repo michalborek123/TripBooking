@@ -12,11 +12,10 @@ namespace TripBooking.Data.Trips.Repository
     public interface ITripRepository
     {
         Task<TripResponse> AddTripAsync(CreateTripRequest request, CancellationToken cancellationToken = default);
-        Task DeleteAsync(string name, CancellationToken cancellationToken);
-        Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken);
-        Task<IEnumerable<TripNameResponse>> GetByCountryAsync(State country, CancellationToken cancellationToken);
+        Task DeleteAsync(string name, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TripNameResponse>> GetAllAsync(string? tripName, State? country, CancellationToken cancellationToken);
+        Task<TripResponse> UpdateAsync(string name, UpdateTripRequest request, CancellationToken cancellationToken = default);
         Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
-        Task<TripResponse> UpdateAsync(string name, UpdateTripRequest request, CancellationToken cancellationToken);
     }
 
     internal class TripRepository : ITripRepository
@@ -62,28 +61,23 @@ namespace TripBooking.Data.Trips.Repository
             await apiContext.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<TripNameResponse>> GetAllAsync(CancellationToken cancellationToken)
+        public Task<IEnumerable<TripNameResponse>> GetAllAsync(string? tripName, State? country, CancellationToken cancellationToken)
         {
-            var trips = apiContext.Trips.Select(x => new TripNameResponse(x.Name)).AsEnumerable();
+            IQueryable<Trip> query = apiContext.Trips;
+
+            if (string.IsNullOrWhiteSpace(tripName))
+            {
+                query = apiContext.Trips.Where(x => x.Name == tripName);
+            }
+
+            if (country is not null)
+            {
+                query = apiContext.Trips.Where(x => x.Country == country);
+            }
+
+            var trips = query.Select(x => new TripNameResponse(x.Name)).AsEnumerable();
 
             return Task.FromResult(trips);
-        }
-
-        public async Task<IEnumerable<TripNameResponse>> GetByCountryAsync(State country, CancellationToken cancellationToken)
-        {
-            var tripsByCountry = await apiContext.Trips.Where(x => x.Country == country)
-                .Select(x => new TripNameResponse(x.Name)).ToListAsync(cancellationToken);
-
-            return tripsByCountry;
-        }
-
-        public async Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-        {
-            var trip = await GetTripByNameAsync(name, cancellationToken);
-
-            var response = mapper.Map<TripResponse>(trip);
-
-            return response;
         }
 
         public async Task<TripResponse> UpdateAsync(string name, UpdateTripRequest request, CancellationToken cancellationToken)
@@ -106,6 +100,15 @@ namespace TripBooking.Data.Trips.Repository
             var respone = mapper.Map<TripResponse>(trip);
 
             return respone;
+        }
+
+        public async Task<TripResponse?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            var trip = await GetTripByNameAsync(name, cancellationToken);
+
+            var response = mapper.Map<TripResponse>(trip);
+
+            return response;
         }
 
         private async Task<Trip?> GetTripByNameAsync(string name, CancellationToken cancellationToken = default)

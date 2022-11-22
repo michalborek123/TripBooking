@@ -59,6 +59,31 @@ namespace TripBooking.WebApp.Trips.Controllers
         }
 
         /// <summary>
+        /// Get all trips
+        /// </summary>
+        /// <param name="name">Trip name filter</param>
+        /// <param name="country">Country filter</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List of all trips (names)</returns>
+        [HttpGet(Name = "GetAllTrips")]
+        [ProducesResponseType(typeof(IEnumerable<TripNameResponse>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetAllTrips(
+            [FromQuery] string? name, 
+            [FromQuery] State? country, CancellationToken cancellationToken)
+        {
+            var result = await tripRepository.GetAllAsync(name, country, cancellationToken);
+
+            if (result is null || !result.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Get trip data by name
         /// </summary>
         /// <param name="tripName">Trip name</param>
@@ -70,49 +95,6 @@ namespace TripBooking.WebApp.Trips.Controllers
         public async Task<ActionResult<TripResponse>> GetTripByName([FromRoute] string tripName, CancellationToken cancellationToken)
         {
             var result = await tripRepository.GetByNameAsync(tripName, cancellationToken);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Get all trips
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns>List of all trips (names)</returns>
-        [HttpGet(Name = "GetAllTrips")]
-        [ProducesResponseType(typeof(IEnumerable<TripNameResponse>), 200)]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetAllTrips(CancellationToken cancellationToken)
-        {
-            var result = await tripRepository.GetAllAsync(cancellationToken);
-
-            if (result is null || !result.Any())
-            {
-                return NoContent();
-            }
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Get all trips by country
-        /// </summary>
-        /// <param name="country">Country name</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>List of all trips for country (names)</returns>
-        [HttpGet("country/{country}", Name = "GetTripsByCountry")]
-        [ProducesResponseType(typeof(IEnumerable<TripNameResponse>), 200)]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        public async Task<ActionResult<IEnumerable<TripNameResponse>>> GetTripsByCountry([FromRoute] State country, CancellationToken cancellationToken)
-        {
-            var result = await tripRepository.GetByCountryAsync(country, cancellationToken);
-
-            if (result is null || !result.Any())
-            {
-                return NoContent();
-            }
 
             return Ok(result);
         }
@@ -141,10 +123,10 @@ namespace TripBooking.WebApp.Trips.Controllers
         [HttpPost]
         [Route("{tripName}/register")]
         [ProducesResponseType(typeof(TripRegistrationResponse), 200)]
-        public async Task<ActionResult<TripRegistrationResponse>> RegisterForTrip(string tripName, TripRegistrationRequest request)
+        public async Task<ActionResult<TripRegistrationResponse>> RegisterForTrip(string tripName, TripRegistrationRequest request, CancellationToken cancellationToken)
         {
             request.SetTripName(tripName);
-            var registration = await registrationRepository.RegisterForTripAsync(request);
+            var registration = await registrationRepository.RegisterForTripAsync(request, cancellationToken);
 
             return Ok(registration);
         }
@@ -158,12 +140,15 @@ namespace TripBooking.WebApp.Trips.Controllers
         [HttpPost]
         [Route("{tripName}/unregister")]
         [ProducesResponseType(typeof(TripRegistrationResponse), 200)]
-        public async Task<ActionResult<TripRegistrationResponse>> UnregisterFromTrip(string tripName, TripUnregistrationRequest request)
+        public async Task<ActionResult<TripRegistrationResponse>> UnregisterFromTrip(string tripName, TripUnregistrationRequest request, CancellationToken cancellationToken)
         {
             request.SetTripName(tripName);
-            var registration = await registrationRepository.UnregisterFromTripAsync(request);
+            var registration = await registrationRepository.UnregisterFromTripAsync(request, cancellationToken);
 
             return Ok(registration);
         }
+
+
     }
+
 }

@@ -5,6 +5,7 @@ using TripBooking.Core.Reservations.Commands;
 using TripBooking.Core.Reservations.Exceptions;
 using TripBooking.Core.Reservations.Responses;
 using TripBooking.Core.Trips.Exceptions;
+using TripBooking.Core.Trips.Responses;
 using TripBooking.Data.Context;
 using TripBooking.Data.Reservations.Model;
 using TripBooking.Data.Trips.Repository;
@@ -13,8 +14,8 @@ namespace TripBooking.Data.Reservations.Repository
 {
     public interface IRegistrationRepository
     {
-        Task<TripRegistrationResponse> RegisterForTripAsync(TripRegistrationRequest request);
-        Task<TripRegistrationResponse> UnregisterFromTripAsync(TripUnregistrationRequest request);
+        Task<TripRegistrationResponse> RegisterForTripAsync(TripRegistrationRequest request, CancellationToken cancellationToken);
+        Task<TripRegistrationResponse> UnregisterFromTripAsync(TripUnregistrationRequest request, CancellationToken cancellationToken);
     }
 
     internal class RegistrationRepository : IRegistrationRepository
@@ -30,9 +31,9 @@ namespace TripBooking.Data.Reservations.Repository
             this.tripRepository = tripRepository;
         }
 
-        public async Task<TripRegistrationResponse> RegisterForTripAsync(TripRegistrationRequest request)
+        public async Task<TripRegistrationResponse> RegisterForTripAsync(TripRegistrationRequest request, CancellationToken cancellationToken)
         {
-            var trip = await tripRepository.GetByNameAsync(request.TripName);
+            var trip = await tripRepository.GetByNameAsync(request.TripName, cancellationToken);
 
             if (trip is null)
             {
@@ -54,7 +55,7 @@ namespace TripBooking.Data.Reservations.Repository
             return response;
         }
 
-        public async Task<TripRegistrationResponse> UnregisterFromTripAsync(TripUnregistrationRequest request)
+        public async Task<TripRegistrationResponse> UnregisterFromTripAsync(TripUnregistrationRequest request, CancellationToken cancellationToken)
         {
             if (!CheckExistsRegistration(request.TripName, request.Email))
             {
@@ -71,6 +72,7 @@ namespace TripBooking.Data.Reservations.Repository
             var response = mapper.Map<TripRegistrationResponse>(registration);
             return response;
         }
+        
 
         private bool CheckExistsRegistration(string tripName, string email)
             => apiContext.TripRegistrations.Any(x => x.TripName == tripName && x.Email == email && x.Status == RegistrationStatus.Registered);
